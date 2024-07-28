@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package todo;
+
+option go_package = "todo-go/backend/proto/todo";
+
+service TodoService {
+  rpc CreateTodo(CreateTodoRequest) returns (Todo) {}
+  rpc GetTodos(GetTodosRequest) returns (GetTodosResponse) {}
+}
+
+message Todo {
+  uint64 id = 1;
+  string title = 2;
+  bool completed = 3;
+}
+
+message CreateTodoRequest {
+  string title = 1;
+}
+
+message GetTodosRequest {}
+
+message GetTodosResponse {
+  repeated Todo todos = 1;
+}
