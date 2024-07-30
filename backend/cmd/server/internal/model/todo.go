@@ -1,9 +1,15 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Todo struct {
 	gorm.Model
-	Title     string `json:"title"`
-	Completed bool   `json:"completed"`
+    ID        string    `json:"id" gorm:"primaryKey;type:uuid"`
+	Title     string    `json:"title"`
+	Completed bool      `json:"completed"`
+	CreatedAt time.Time `json:"created_at"`
 }

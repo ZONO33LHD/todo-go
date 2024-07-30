@@ -10,9 +10,10 @@ service TodoService {
 }
 
 message Todo {
-  uint64 id = 1;
+  string id = 1;
   string title = 2;
   bool completed = 3;
+  string created_at = 4;
 }
 
 message CreateTodoRequest {

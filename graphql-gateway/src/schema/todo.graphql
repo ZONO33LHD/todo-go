@@ -2,6 +2,7 @@ type Todo {
   id: ID!
   title: String!
   completed: Boolean!
+  created_at: String!
 }
 
 type Query {
@@ -11,4 +12,6 @@ type Query {
 type Mutation {
   createTodo(title: String!): Todo!
   updateTodo(id: ID!, completed: Boolean!): Todo!
+  deleteTodo(id: ID!): Todo!
+  toggleTodo(id: ID!): Todo!
 }

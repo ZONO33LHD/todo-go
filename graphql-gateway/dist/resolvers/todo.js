@@ -37,36 +37,106 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     defaults: true,
     oneofs: true,
 });
+// protoファイルを読み込む
 const todoProto = grpc.loadPackageDefinition(packageDefinition).todo;
+// gRPCクライアントを作成
 const client = new todoProto.TodoService("localhost:50051", grpc.credentials.createInsecure());
+// クエリとミューテーションを定義
 const resolvers = {
     Query: {
+        // todosクエリを定義
         todos: () => {
             return new Promise((resolve, reject) => {
+                console.log('getTodosリクエスト開始');
                 client.getTodos({}, (err, response) => {
-                    if (err)
+                    if (err) {
+                        console.error('gRPCエラー (getTodos):', err);
+                        console.error('エラーの詳細:', err.stack);
                         reject(err);
-                    resolve(response.todos);
+                    }
+                    else {
+                        console.log('gRPC応答 (getTodos):', JSON.stringify(response, null, 2));
+                        if (response && response.todos) {
+                            console.log('Todos数:', response.todos.length);
+                            resolve(response.todos);
+                        }
+                        else {
+                            console.error('予期しない応答形式 (getTodos):', response);
+                            reject(new Error('予期しない応答形式'));
+                        }
+                    }
                 });
             });
         },
     },
     Mutation: {
+        // createTodoミューテーションを定義
         createTodo: (_, { title }) => {
             return new Promise((resolve, reject) => {
                 client.createTodo({ title }, (err, response) => {
-                    if (err)
+                    if (err) {
+                        console.error('gRPCエラー (createTodo):', err);
                         reject(err);
-                    resolve(response);
+                    }
+                    else {
+                        console.log('gRPC応答 (createTodo):', response);
+                        if (response && response.id && response.title) {
+                            resolve(response);
+                        }
+                        else {
+                            console.error('予期しない応答形式 (createTodo):', response);
+                            reject(new Error('予期しない応答形式'));
+                        }
+                    }
                 });
             });
         },
+        // updateTodoミューテーションを定義
         updateTodo: (_, { id, completed }) => {
             return new Promise((resolve, reject) => {
                 client.updateTodo({ id, completed }, (err, response) => {
-                    if (err)
+                    if (err) {
+                        console.error('gRPCエラー (updateTodo):', err);
                         reject(err);
-                    resolve(response);
+                    }
+                    else {
+                        console.log('gRPC応答 (updateTodo):', response);
+                        if (response && response.id) {
+                            resolve(response);
+                        }
+                        else {
+                            console.error('予期しない応答形式 (updateTodo):', response);
+                            reject(new Error('予期しない応答形式'));
+                        }
+                    }
+                });
+            });
+        },
+        // deleteTodoミューテーションを定義
+        deleteTodo: (_, { id }) => {
+            return new Promise((resolve, reject) => {
+                client.deleteTodo({ id }, (err, response) => {
+                    // エラーハンドリングと応答の処理
+                });
+            });
+        },
+        toggleTodo: (_, { id }) => {
+            return new Promise((resolve, reject) => {
+                client.toggleTodo({ id }, (err, response) => {
+                    if (err) {
+                        console.error('gRPCエラー (toggleTodo):', err);
+                        reject(err);
+                    }
+                    else {
+                        console.log('gRPC応答 (toggleTodo):', response);
+                        if (response && response.id) {
+                            resolve(response);
+                        }
+                        else {
+                            console.error('予期しない応答形式 (toggleTodo):', response);
+                            reject(new Error('予期しない応答形式'));
+                        }
+                    }
                 });
             });
         },
