@@ -2,26 +2,39 @@ syntax = "proto3";
 
 package todo;
 
+// サービスのコードを生成するためのオプション
 option go_package = "todo-go/backend/proto/todo";
 
+// Todo サービス
 service TodoService {
   rpc CreateTodo(CreateTodoRequest) returns (Todo) {}
   rpc GetTodos(GetTodosRequest) returns (GetTodosResponse) {}
+  rpc ToggleTodo(ToggleTodoRequest) returns (Todo) {}
 }
 
+// Todo メッセージ
 message Todo {
   string id = 1;
   string title = 2;
   bool completed = 3;
   string created_at = 4;
+  string updated_at = 5;
 }
 
+// ToggleTodo メッセージ
+message ToggleTodoRequest {
+  string id = 1;
+}
+
+// CreateTodo メッセージ
 message CreateTodoRequest {
   string title = 1;
 }
 
+// GetTodos メッセージ
 message GetTodosRequest {}
 
+// GetTodosResponse メッセージ
 message GetTodosResponse {
   repeated Todo todos = 1;
 }

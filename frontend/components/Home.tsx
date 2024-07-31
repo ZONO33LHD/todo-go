@@ -5,7 +5,11 @@ import TodoForm from "./TodoForm";
 import { useState } from "react";
 
 export default function Home() {
-  const { loading, error: queryError, data } = useQuery<{ todos: Todo[] }>(GET_TODOS);
+  const {
+    loading,
+    error: queryError,
+    data,
+  } = useQuery<{ todos: Todo[] }>(GET_TODOS);
   const [toggleTodo] = useMutation(TOGGLE_TODO);
   const [createTodo] = useMutation(CREATE_TODO);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +20,9 @@ export default function Home() {
       await createTodo({
         variables: { title },
         update: (cache, { data: { createTodo } }) => {
-          const existingTodos = cache.readQuery<{ todos: Todo[] }>({ query: GET_TODOS });
+          const existingTodos = cache.readQuery<{ todos: Todo[] }>({
+            query: GET_TODOS,
+          });
           if (existingTodos) {
             cache.writeQuery({
               query: GET_TODOS,
@@ -37,10 +43,14 @@ export default function Home() {
       await toggleTodo({
         variables: { id },
         update: (cache, { data: { toggleTodo } }) => {
-          const existingTodos = cache.readQuery<{ todos: Todo[] }>({ query: GET_TODOS });
+          const existingTodos = cache.readQuery<{ todos: Todo[] }>({
+            query: GET_TODOS,
+          });
           if (existingTodos) {
-            const newTodos = existingTodos.todos.map(todo =>
-              todo.id === id ? { ...todo, completed: toggleTodo.completed } : todo
+            const newTodos = existingTodos.todos.map((todo) =>
+              todo.id === id
+                ? { ...todo, completed: toggleTodo.completed }
+                : todo
             );
             cache.writeQuery({
               query: GET_TODOS,
@@ -62,7 +72,9 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">TODOリスト</h1>
       <TodoForm onSubmit={handleCreateTodo} />
-      {data && <TodoList todos={data.todos} onToggleComplete={handleToggleComplete} />}
+      {data && (
+        <TodoList todos={data.todos} onToggleComplete={handleToggleComplete} />
+      )}
       {error && <p className="text-red-500">{error}</p>}
     </div>
   );

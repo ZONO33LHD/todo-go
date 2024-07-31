@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion8
 const (
 	TodoService_CreateTodo_FullMethodName = "/todo.TodoService/CreateTodo"
 	TodoService_GetTodos_FullMethodName   = "/todo.TodoService/GetTodos"
+	TodoService_ToggleTodo_FullMethodName = "/todo.TodoService/ToggleTodo"
 )
 
 // TodoServiceClient is the client API for TodoService service.
@@ -29,6 +30,7 @@ const (
 type TodoServiceClient interface {
 	CreateTodo(ctx context.Context, in *CreateTodoRequest, opts ...grpc.CallOption) (*Todo, error)
 	GetTodos(ctx context.Context, in *GetTodosRequest, opts ...grpc.CallOption) (*GetTodosResponse, error)
+	ToggleTodo(ctx context.Context, in *ToggleTodoRequest, opts ...grpc.CallOption) (*Todo, error)
 }
 
 type todoServiceClient struct {
@@ -59,12 +61,23 @@ func (c *todoServiceClient) GetTodos(ctx context.Context, in *GetTodosRequest, o
 	return out, nil
 }
 
+func (c *todoServiceClient) ToggleTodo(ctx context.Context, in *ToggleTodoRequest, opts ...grpc.CallOption) (*Todo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Todo)
+	err := c.cc.Invoke(ctx, TodoService_ToggleTodo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TodoServiceServer is the server API for TodoService service.
 // All implementations must embed UnimplementedTodoServiceServer
 // for forward compatibility
 type TodoServiceServer interface {
 	CreateTodo(context.Context, *CreateTodoRequest) (*Todo, error)
 	GetTodos(context.Context, *GetTodosRequest) (*GetTodosResponse, error)
+	ToggleTodo(context.Context, *ToggleTodoRequest) (*Todo, error)
 	mustEmbedUnimplementedTodoServiceServer()
 }
 
@@ -77,6 +90,9 @@ func (UnimplementedTodoServiceServer) CreateTodo(context.Context, *CreateTodoReq
 }
 func (UnimplementedTodoServiceServer) GetTodos(context.Context, *GetTodosRequest) (*GetTodosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTodos not implemented")
+}
+func (UnimplementedTodoServiceServer) ToggleTodo(context.Context, *ToggleTodoRequest) (*Todo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ToggleTodo not implemented")
 }
 func (UnimplementedTodoServiceServer) mustEmbedUnimplementedTodoServiceServer() {}
 
@@ -127,6 +143,24 @@ func _TodoService_GetTodos_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TodoService_ToggleTodo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ToggleTodoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TodoServiceServer).ToggleTodo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TodoService_ToggleTodo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TodoServiceServer).ToggleTodo(ctx, req.(*ToggleTodoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TodoService_ServiceDesc is the grpc.ServiceDesc for TodoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -141,6 +175,10 @@ var TodoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTodos",
 			Handler:    _TodoService_GetTodos_Handler,
+		},
+		{
+			MethodName: "ToggleTodo",
+			Handler:    _TodoService_ToggleTodo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

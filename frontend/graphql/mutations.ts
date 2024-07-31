@@ -14,6 +14,7 @@ export const TOGGLE_TODO = gql`
   mutation ToggleTodo($id: ID!) {
     toggleTodo(id: $id) {
       id
+      title
       completed
     }
   }
